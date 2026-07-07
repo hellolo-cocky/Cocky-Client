@@ -147,3 +147,5 @@
 [2mPM 3:06:36[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
 [2mPM 3:06:36[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/index.css. This could be due to syntax errors or importing non-existent modules. (see errors above)
 [2mPM 3:06:36[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2mPM 3:07:00[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [31merror while updating dependencies:
+Error: EPERM: operation not permitted, rename 'C:\Users\master\Desktop\Cocky\Cocky-Client\node_modules\.vite\deps_temp_a144c033' -> 'C:\Users\master\Desktop\Cocky\Cocky-Client\node_modules\.vite\deps'[39m
