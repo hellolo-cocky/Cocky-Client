@@ -86,13 +86,20 @@ function App() {
   }
 
   const handleLogin = () => {
-    // Data GSM OAuth 로그인 (마지막에 구현)
-    // const clientId = '7392649f-04e5-44ea-bf56-1e6f3782b3f9'
-    // const redirectUri = `${window.location.origin}/auth/callback`
-    // const authUrl = `https://datagsm.gsm.hs.kr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid+profile+email`
-    // window.location.href = authUrl
-    
-    setIsLoggedIn(!isLoggedIn)
+    //const clientId = '7392649f-04e5-44ea-bf56-1e6f3782b3f9'
+    //const redirectUri = `${window.location.origin}/auth/callback`
+
+    //const state = crypto.randomUUID()
+    //sessionStorage.setItem('oauth_state', state)
+
+    //const authUrl =
+      //`https://oauth.authorization.datagsm.kr/v1/oauth/authorize?` +
+      //`client_id=${clientId}` +
+      //`&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      //`&response_type=code` +
+      //`&state=${state}`
+
+    //window.location.href = authUrl
   }
 
   const handleSearch = () => {
