@@ -203,7 +203,7 @@ function App() {
 
   const resetProblemControls = () => {
     setSelectedDifficulty(0)
-    setSortBy('최신순')
+    setSortBy('최신 순')
     setSearchQuery('')
     setAppliedSearchQuery('')
     setShowSortDropdown(false)
