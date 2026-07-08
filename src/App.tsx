@@ -19,11 +19,149 @@ const navItems = ['문제', '학습', '랭킹', '게시판', '회고']
 const difficultyFilters = ['Bronze', 'Normal', 'Gold']
 const sortOptions = ['최신 순', '정답률 낮은 순', '정답률 높은 순']
 
+const problemSelectionTemplates = [
+  { title: '1001번 A+B', language: 'Python', level: 'Normal', rate: '30.1%' },
+  { title: '1920번 수 찾기', language: 'C', level: 'Normal', rate: '30.1%' },
+  { title: '10828번 스택', language: 'Python', level: 'Normal', rate: '37.8%' },
+  { title: '1759번 암호 만들기', language: 'Java', level: 'Gold', rate: '44.7%' },
+  { title: '2751번 수 정렬하기', language: 'C', level: 'Normal', rate: '42.3%' },
+  { title: '1005번 ACM Craft', language: 'Java', level: 'Gold', rate: '25.6%' },
+  { title: '11720번 숫자의 합', language: 'Python', level: 'Normal', rate: '47.9%' },
+  { title: '1152번 단어의 개수', language: 'Python', level: 'Normal', rate: '34.4%' },
+  { title: '1260번 DFS와 BFS', language: 'Java', level: 'Normal', rate: '36.2%' },
+  { title: '1931번 회의실 배정', language: 'C', level: 'Gold', rate: '38.9%' },
+]
+
+const PROBLEM_PAGE_SIZE = 10
+const problemSelectionItems = Array.from({ length: 30 }, (_, index) => {
+  const template = problemSelectionTemplates[index % problemSelectionTemplates.length]
+  return {
+    ...template,
+    id: index + 1,
+  }
+})
+
+function ChevronIcon({ direction = 'right' }: { direction?: 'left' | 'right' }) {
+  return (
+    <svg
+      width="10"
+      height="16"
+      viewBox="0 0 10 16"
+      fill="none"
+      style={{ transform: direction === 'left' ? 'scaleX(-1)' : undefined }}
+      aria-hidden="true"
+    >
+      <path
+        d="M1 1L9 8L1 15"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 function SceneTitle({ scene, title }: { scene: string; title: string }) {
   return (
     <section className="section-title">
       <span className="scene-pill">{scene}</span>
       <h2>{title}</h2>
+    </section>
+  )
+}
+
+function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }) {
+  const [activeTab, setActiveTab] = useState('문제 목록')
+  const [currentPage, setCurrentPage] = useState(1)
+  const totalPages = Math.ceil(problemSelectionItems.length / PROBLEM_PAGE_SIZE)
+  const currentProblems = problemSelectionItems.slice(
+    (currentPage - 1) * PROBLEM_PAGE_SIZE,
+    currentPage * PROBLEM_PAGE_SIZE,
+  )
+
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab)
+    setCurrentPage(1)
+  }
+
+  return (
+    <section className="problem-page">
+      <div className="problem-page-heading">
+        <div>
+          <SceneTitle scene="SCENE 01" title="시작하기 후 문제 선택" />
+          <p>
+            홈의 시작하기 버튼을 누르면 오늘 추천 문제와 문제 목록으로 이동하고,
+            선택한 문제는 풀이 화면으로 이어집니다.
+          </p>
+        </div>
+      </div>
+
+      <article className="problem-selection-card">
+        <h2>풀이 할 문제를 선택하세요</h2>
+
+        <div className="problem-selection-toolbar">
+          <div className="problem-selection-tabs">
+            {['문제 목록', '추천 문제 풀기', '최근 풀이'].map((tab) => (
+              <button
+                className={activeTab === tab ? 'active' : ''}
+                key={tab}
+                type="button"
+                onClick={() => handleTabClick(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          <div className="problem-selection-actions">
+            <button type="button">피드백 보기</button>
+            <button type="button" onClick={onRankingClick}>랭킹 보기</button>
+          </div>
+        </div>
+
+        <div className="problem-selection-list">
+          {currentProblems.map((problem) => (
+            <article className="problem-selection-row" key={problem.id}>
+              <strong>{problem.title}</strong>
+              <span className="problem-language">{problem.language}</span>
+              <span className={`problem-level ${problem.level.toLowerCase()}`}>
+                {problem.level}
+              </span>
+              <span className="problem-rate">{problem.rate}</span>
+              <button type="button">풀기</button>
+            </article>
+          ))}
+        </div>
+
+        <nav className="problem-pagination" aria-label="문제 목록 페이지">
+          <button
+            className="arrow"
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+          >
+            <ChevronIcon direction="left" />
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+            <button
+              className={currentPage === page ? 'active' : ''}
+              key={page}
+              type="button"
+              onClick={() => setCurrentPage(page)}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            className="arrow"
+            type="button"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+          >
+            <ChevronIcon direction="right" />
+          </button>
+        </nav>
+      </article>
     </section>
   )
 }
@@ -37,7 +175,6 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showSortDropdown, setShowSortDropdown] = useState(false)
 
-  // 로그인 정보 (실제로는 서버에서 받아올 데이터)
   const userInfo = {
     name: '김민준',
     number: '1206',
@@ -86,25 +223,8 @@ function App() {
   }
 
   const handleLogin = () => {
-  setIsLoggedIn(!isLoggedIn)
+    setIsLoggedIn(!isLoggedIn)
   }
-
-  //const handleLogin = () => {
-    //const clientId = '7392649f-04e5-44ea-bf56-1e6f3782b3f9'
-    //const redirectUri = `${window.location.origin}/auth/callback`
-
-    //const state = crypto.randomUUID()
-    //sessionStorage.setItem('oauth_state', state)
-
-    //const authUrl =
-      //`https://oauth.authorization.datagsm.kr/v1/oauth/authorize?` +
-      //`client_id=${clientId}` +
-      //`&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      //`&response_type=code` +
-      //`&state=${state}`
-
-    //window.location.href = authUrl
-  //}
 
   const handleSearch = () => {
     setAppliedSearchQuery(searchQuery.trim())
@@ -116,7 +236,6 @@ function App() {
     }
   }
 
-  // 정렬 로직
   const getSortedProblems = (problems: typeof allProblems) => {
     const sorted = [...problems]
     switch (sortBy) {
@@ -166,9 +285,9 @@ function App() {
         </a>
         <nav className="nav" aria-label="주요 메뉴">
           {navItems.map((item, index) => (
-            <a 
-              className={activeNav === index + 1 ? 'active' : ''} 
-              href="#" 
+            <a
+              className={activeNav === index + 1 ? 'active' : ''}
+              href="#"
               key={item}
               onClick={(e) => {
                 e.preventDefault()
@@ -184,7 +303,7 @@ function App() {
         </button>
       </header>
 
-      <main className="workspace">
+      <main className={`workspace ${activeNav === 1 ? 'problem-page-workspace' : ''}`}>
         <div className="content">
           {activeNav === -1 && (
             <>
@@ -347,7 +466,7 @@ function App() {
           )}
 
           {activeNav === 1 && (
-            <SceneTitle scene="SCENE 02" title="Problem" />
+            <ProblemSelectionPage onRankingClick={() => handleNavClick(3)} />
           )}
 
           {activeNav === 2 && (
