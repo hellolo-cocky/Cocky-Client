@@ -17,7 +17,7 @@ const allProblems = [
 
 const navItems = ['문제', '학습', '랭킹', '게시판', '회고']
 const difficultyFilters = ['Bronze', 'Normal', 'Gold']
-const sortOptions = ['최신순', '정답률 낮은순', '정답률 높은순']
+const sortOptions = ['최신 순', '정답률 낮은 순', '정답률 높은 순']
 
 function SceneTitle({ scene, title }: { scene: string; title: string }) {
   return (
@@ -86,6 +86,10 @@ function App() {
   }
 
   const handleLogin = () => {
+  setIsLoggedIn(!isLoggedIn)
+  }
+
+  //const handleLogin = () => {
     //const clientId = '7392649f-04e5-44ea-bf56-1e6f3782b3f9'
     //const redirectUri = `${window.location.origin}/auth/callback`
 
@@ -100,7 +104,7 @@ function App() {
       //`&state=${state}`
 
     //window.location.href = authUrl
-  }
+  //}
 
   const handleSearch = () => {
     setAppliedSearchQuery(searchQuery.trim())
@@ -116,11 +120,11 @@ function App() {
   const getSortedProblems = (problems: typeof allProblems) => {
     const sorted = [...problems]
     switch (sortBy) {
-      case '정답률 낮은순':
+      case '정답률 낮은 순':
         return sorted.sort((a, b) => a.rate - b.rate)
-      case '정답률 높은순':
+      case '정답률 높은 순':
         return sorted.sort((a, b) => b.rate - a.rate)
-      case '최신순':
+      case '최신 순':
         return sorted
       default:
         return sorted
