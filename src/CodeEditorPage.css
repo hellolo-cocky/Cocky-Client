@@ -1,0 +1,151 @@
+/* 전체 레이아웃 */
+.code-editor-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: sans-serif;
+  color: #111827;
+}
+
+/* 상단 헤더 (이전 페이지와 동일 구조) */
+.scene-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.scene-badge {
+  background-color: #1f2937;
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.scene-title-group h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.scene-title-group p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* 메인 레이아웃 (3단 분할) */
+.editor-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* 1️⃣ 코드 에디터 카드 */
+.editor-card {
+  flex: 1; /* 남은 공간을 모두 차지하도록 설정 */
+  min-height: 500px;
+  background-color: #161b22; /* 다크 테마 배경 */
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 에디터 탭 */
+.editor-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.tab-btn.active {
+  color: #ffffff;
+}
+
+.tab-btn:hover {
+  color: #c9d1d9;
+}
+
+/* 텍스트 에디터 (코드 입력란) */
+.code-textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  margin-bottom: 24px;
+}
+
+/* 에디터 하단 버튼 */
+.editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.editor-actions button {
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-submit {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* 2️⃣ 지원 언어 ID 카드 */
+.language-info-card {
+  width: 280px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.info-header strong {
+  font-size: 16px;
+  color: #111827;
+}
+
+.judge-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #111827;
+}
+
+.info-subtext {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}

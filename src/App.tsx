@@ -5,6 +5,8 @@ import rabbit from './assets/rabbit.png'
 import searchIcon from './assets/search-magnifying-glass.svg'
 import turtle from './assets/turtle.png'
 import './App.css'
+import ProblemDetailPage, { type ProblemItem } from './ProblemDetailPage'
+import CodeEditorPage from './CodeEditorPage' // 👈 1. 코드 에디터 컴포넌트 임포트 추가
 
 const allProblems = [
   { title: '1001번 A+B', tags: ['수학', '구현'], level: 'Bronze', rate: 53.4 },
@@ -98,7 +100,13 @@ function SceneTitle({ scene, title }: { scene: string; title: string }) {
   )
 }
 
-function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }) {
+function ProblemSelectionPage({ 
+  onRankingClick, 
+  onSolveClick 
+}: { 
+  onRankingClick: () => void;
+  onSolveClick: (problem: ProblemItem) => void; 
+}) {
   const [activeTab, setActiveTab] = useState('문제 목록')
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(problemSelectionItems.length / PROBLEM_PAGE_SIZE)
@@ -107,7 +115,6 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
     currentPage * PROBLEM_PAGE_SIZE,
   )
 
-  // --- 토스트 상태 관리 ---
   const [toasts, setToasts] = useState<ToastData[]>([])
 
   const addToast = () => {
@@ -122,7 +129,6 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
   const removeToast = (id: number) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id))
   }
-  // ------------------------------
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab)
@@ -131,11 +137,11 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
 
   const isSunday = new Date().getDay() === 0;
 
-  const handleSolveClick = () => {
+  const handleSolveClick = (problem: ProblemItem) => { 
     if (isSunday) {
-      addToast(); // 일요일이면 오류 팝업
+      addToast();
     } else {
-      console.log('정상적으로 문제 풀이 화면으로 이동합니다!');
+      onSolveClick(problem); 
     }
   }
 
@@ -204,12 +210,12 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
                 <button
                   type="button"
                   className={`solve-button ${problem.level.toLowerCase()}`}
-                  onClick={handleSolveClick} 
+                  onClick={() => handleSolveClick(problem)}
                 >
                   풀기
                 </button>
-              </div>
-            </article>
+                </div>
+              </article>
           ))}
         </div>
 
@@ -260,6 +266,8 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
 
 function App() {
   const [activeNav, setActiveNav] = useState(-1)
+  const [solvingProblem, setSolvingProblem] = useState<ProblemItem | null>(null)
+  const [isEditing, setIsEditing] = useState(false) // 👈 2. 코드 에디터 화면 제어용 상태(State) 추가
   const [selectedDifficulty, setSelectedDifficulty] = useState(0)
   const [sortBy, setSortBy] = useState('최신순')
   const [searchQuery, setSearchQuery] = useState('')
@@ -305,9 +313,11 @@ function App() {
     resetProblemControls()
   }, [activeNav])
 
-  const handleNavClick = (index: number) => {
+  const handleNavClick = (index: number) => { 
     resetProblemControls()
     setActiveNav(index)
+    setSolvingProblem(null) 
+    setIsEditing(false) // 👈 3. 상단 메뉴 이동할 때 에디터 상태 초기화
   }
 
   const handleStartClick = () => {
@@ -394,190 +404,210 @@ function App() {
           {isLoggedIn ? '로그아웃' : '로그인'}
         </button>
       </header>
+      
+      {/* 4. 화면 분기 조건문 업데이트 */}
+      {isEditing && solvingProblem ? (
+        // ① 풀이 시작 버튼을 누르면 코드 에디터 페이지를 표시합니다.
+        <CodeEditorPage 
+          problem={solvingProblem} 
+          onBack={() => setIsEditing(false)} 
+        />
+      ) : solvingProblem ? (
+        // ② 목록에서 문제를 선택했을 때는 상세 페이지를 표시합니다.
+        <ProblemDetailPage 
+          problem={solvingProblem}
+          onBack={() => setSolvingProblem(null)}
+          onStartSolve={() => setIsEditing(true)} // 👈 버튼 클릭 시 에디터 상태를 true로 설정!
+        />
+      ) : (
+        // ③ 그 외에는 기본 워크스페이스가 노출됩니다.
+        <main className={`workspace ${activeNav === 1 ? 'problem-page-workspace' : ''}`}>
+          <div className="content">
+            {activeNav === -1 && (
+              <>
+                <SceneTitle scene="SCENE 01" title="Home" />
 
-      <main className={`workspace ${activeNav === 1 ? 'problem-page-workspace' : ''}`}>
-        <div className="content">
-          {activeNav === -1 && (
-            <>
-              <SceneTitle scene="SCENE 01" title="Home" />
-
-              <section className="hero-row">
-                <article className="hero-card">
-                  <div className="hero-copy-block">
-                    <h1>
-                      코딩 문제를 풀고<br />
-                      실력을 키워보세요.
-                    </h1>
-                    <p>
-                      백준처럼 딱딱하지 않게, 집중하기 좋은 회색톤 개발자 대시보드로<br />
-                      문제 탐색부터 풀이까지 한 번에 이어집니다.
-                    </p>
-                  </div>
-                  <button className="primary-button" type="button" onClick={handleStartClick}>
-                    시작하기
-                  </button>
-                  <aside className="terminal-card" aria-label="오늘의 추천 문제">
-                    <span>$ solve today</span>
-                    <div>
-                      <strong>1001 A+B</strong>
-                      <strong>10828 Stack</strong>
-                      <strong>1920 Search</strong>
+                <section className="hero-row">
+                  <article className="hero-card">
+                    <div className="hero-copy-block">
+                      <h1>
+                        코딩 문제를 풀고<br />
+                        실력을 키워보세요.
+                      </h1>
+                      <p>
+                        백준처럼 딱딱하지 않게, 집중하기 좋은 회색톤 개발자 대시보드로<br />
+                        문제 탐색부터 풀이까지 한 번에 이어집니다.
+                      </p>
                     </div>
-                    <span>status: focused</span>
-                  </aside>
-                </article>
+                    <button className="primary-button" type="button" onClick={handleStartClick}>
+                      시작하기
+                    </button>
+                    <aside className="terminal-card" aria-label="오늘의 추천 문제">
+                      <span>$ solve today</span>
+                      <div>
+                        <strong>1001 A+B</strong>
+                        <strong>10828 Stack</strong>
+                        <strong>1920 Search</strong>
+                      </div>
+                      <span>status: focused</span>
+                    </aside>
+                  </article>
 
-                <aside className="profile-wrap">
-                  <article className="profile-card-unified">
-                    <h2>내 프로필</h2>
-                    {isLoggedIn ? (
-                      <div className="profile-row">
-                        <img className="avatar" src={avatar} alt="" />
-                        <div>
-                          <strong>안녕하세요! {userInfo.name} 님</strong>
-                          <p>{userInfo.number} {userInfo.department}</p>
+                  <aside className="profile-wrap">
+                    <article className="profile-card-unified">
+                      <h2>내 프로필</h2>
+                      {isLoggedIn ? (
+                        <div className="profile-row">
+                          <img className="avatar" src={avatar} alt="" />
+                          <div>
+                            <strong>안녕하세요! {userInfo.name} 님</strong>
+                            <p>{userInfo.number} {userInfo.department}</p>
+                          </div>
                         </div>
+                      ) : (
+                        <div className="login-empty">
+                          <strong>아직 로그인하지 않았습니다</strong>
+                          <p>
+                            로그인하면 이번 주 풀이 현황과
+                            <br />
+                            학습 통계를 확인할 수 있어요.
+                          </p>
+                        </div>
+                      )}
+                      <div className="progress-row">
+                        <strong>진행률</strong>
+                        <img className="pace-icon turtle" src={turtle} alt="" />
+                        <div className="progress-track">
+                          <div className="progress-fill-bars">
+                            {[...Array(9)].map((_, i) => (
+                              <div
+                                key={i}
+                                className={`progress-bar ${
+                                  i < Math.min(profileStats.solvedThisWeek, 9) ? 'filled' : ''
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <img className="pace-icon rabbit" src={rabbit} alt="" />
                       </div>
-                    ) : (
-                      <div className="login-empty">
-                        <strong>아직 로그인하지 않았습니다</strong>
-                        <p>
-                          로그인하면 이번 주 풀이 현황과
-                          <br />
-                          학습 통계를 확인할 수 있어요.
-                        </p>
+                      <p className="weekly-count">이번 주 푼 문제&nbsp; --- &nbsp; <b>{profileStats.solvedThisWeek}</b></p>
+                      <div className="stat-row">
+                        <span className="bronze-stat">Bronze <b>{profileStats.bronze}</b></span>
+                        <span className="normal-stat">Normal <b>{profileStats.normal}</b></span>
+                        <span className="gold-stat">Gold <b>{profileStats.gold}</b></span>
+                        <span className="java-stat">Java <b>{profileStats.java}</b></span>
+                        <span className="python-stat">Python <b>{profileStats.python}</b></span>
+                        <span className="c-stat">C <b>{profileStats.c}</b></span>
                       </div>
+                    </article>
+                  </aside>
+                </section>
+
+                <SceneTitle scene="SCENE 02" title="Problem" />
+
+                <section className="filter-panel" aria-label="문제 필터">
+                  <label className="search-box">
+                    <img src={searchIcon} alt="" />
+                    <input
+                      placeholder="문제 제목, 태그, 번호로 검색"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={handleSearchKeyPress}
+                    />
+                    <button type="button" onClick={handleSearch}>검색</button>
+                  </label>
+                  <div className="filter-tabs">
+                    {['전체', ...difficultyFilters].map((filter, index) => (
+                      <button
+                        className={index === selectedDifficulty ? 'selected' : ''}
+                        type="button"
+                        key={filter}
+                        onClick={() => setSelectedDifficulty(index)}
+                      >
+                        {filter}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="sort-dropdown-wrapper">
+                    <button
+                      className="sort-button"
+                      type="button"
+                      onClick={() => setShowSortDropdown(!showSortDropdown)}
+                    >
+                      {sortBy}
+                    </button>
+                    {showSortDropdown && (
+                      <ul className="sort-dropdown-menu">
+                        {sortOptions.map(option => (
+                          <li key={option}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSortBy(option)
+                                setShowSortDropdown(false)
+                              }}
+                            >
+                              {option}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                    <div className="progress-row">
-                      <strong>진행률</strong>
-                      <img className="pace-icon turtle" src={turtle} alt="" />
-                      <div className="progress-track">
-                        <div className="progress-fill-bars">
-                          {[...Array(9)].map((_, i) => (
-                            <div
-                              key={i}
-                              className={`progress-bar ${
-                                i < Math.min(profileStats.solvedThisWeek, 9) ? 'filled' : ''
-                              }`}
-                            />
+                  </div>
+                </section>
+
+                <section className="problem-grid" aria-label="추천 문제">
+                  {filteredProblems.length > 0 ? filteredProblems.map((problem) => (
+                    <article className="problem-card" key={problem.title}>
+                      <div>
+                        <h3>{problem.title}</h3>
+                        <div className="tag-row">
+                          {problem.tags.map((tag) => (
+                            <span key={tag}>{tag}</span>
                           ))}
                         </div>
                       </div>
-                      <img className="pace-icon rabbit" src={rabbit} alt="" />
-                    </div>
-                    <p className="weekly-count">이번 주 푼 문제&nbsp; --- &nbsp; <b>{profileStats.solvedThisWeek}</b></p>
-                    <div className="stat-row">
-                      <span className="bronze-stat">Bronze <b>{profileStats.bronze}</b></span>
-                      <span className="normal-stat">Normal <b>{profileStats.normal}</b></span>
-                      <span className="gold-stat">Gold <b>{profileStats.gold}</b></span>
-                      <span className="java-stat">Java <b>{profileStats.java}</b></span>
-                      <span className="python-stat">Python <b>{profileStats.python}</b></span>
-                      <span className="c-stat">C <b>{profileStats.c}</b></span>
-                    </div>
-                  </article>
-                </aside>
-              </section>
-
-              <SceneTitle scene="SCENE 02" title="Problem" />
-
-              <section className="filter-panel" aria-label="문제 필터">
-                <label className="search-box">
-                  <img src={searchIcon} alt="" />
-                  <input
-                    placeholder="문제 제목, 태그, 번호로 검색"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleSearchKeyPress}
-                  />
-                  <button type="button" onClick={handleSearch}>검색</button>
-                </label>
-                <div className="filter-tabs">
-                  {['전체', ...difficultyFilters].map((filter, index) => (
-                    <button
-                      className={index === selectedDifficulty ? 'selected' : ''}
-                      type="button"
-                      key={filter}
-                      onClick={() => setSelectedDifficulty(index)}
-                    >
-                      {filter}
-                    </button>
-                  ))}
-                </div>
-                <div className="sort-dropdown-wrapper">
-                  <button
-                    className="sort-button"
-                    type="button"
-                    onClick={() => setShowSortDropdown(!showSortDropdown)}
-                  >
-                    {sortBy}
-                  </button>
-                  {showSortDropdown && (
-                    <ul className="sort-dropdown-menu">
-                      {sortOptions.map(option => (
-                        <li key={option}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSortBy(option)
-                              setShowSortDropdown(false)
-                            }}
-                          >
-                            {option}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                      <div className="problem-meta">
+                        <span className={problem.level.toLowerCase()}>{problem.level}</span>
+                        <div className="acceptance">
+                          <small>정답률</small>
+                          <strong>{problem.rate.toFixed(1)}%</strong>
+                        </div>
+                      </div>
+                    </article>
+                  )) : (
+                    <p className="empty-result">검색 조건에 맞는 문제가 없습니다.</p>
                   )}
-                </div>
-              </section>
+                </section>
+              </>
+            )}
 
-              <section className="problem-grid" aria-label="추천 문제">
-                {filteredProblems.length > 0 ? filteredProblems.map((problem) => (
-                  <article className="problem-card" key={problem.title}>
-                    <div>
-                      <h3>{problem.title}</h3>
-                      <div className="tag-row">
-                        {problem.tags.map((tag) => (
-                          <span key={tag}>{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="problem-meta">
-                      <span className={problem.level.toLowerCase()}>{problem.level}</span>
-                      <div className="acceptance">
-                        <small>정답률</small>
-                        <strong>{problem.rate.toFixed(1)}%</strong>
-                      </div>
-                    </div>
-                  </article>
-                )) : (
-                  <p className="empty-result">검색 조건에 맞는 문제가 없습니다.</p>
-                )}
-              </section>
-            </>
-          )}
+            {activeNav === 1 && (
+              <ProblemSelectionPage 
+                onRankingClick={() => handleNavClick(3)} 
+                onSolveClick={(problem) => setSolvingProblem(problem)} 
+              />
+            )}
 
-          {activeNav === 1 && (
-            <ProblemSelectionPage onRankingClick={() => handleNavClick(3)} />
-          )}
+            {activeNav === 2 && (
+              <SceneTitle scene="SCENE 03" title="Study" />
+            )}
 
-          {activeNav === 2 && (
-            <SceneTitle scene="SCENE 03" title="Study" />
-          )}
+            {activeNav === 3 && (
+              <SceneTitle scene="SCENE 04" title="Ranking" />
+            )}
 
-          {activeNav === 3 && (
-            <SceneTitle scene="SCENE 04" title="Ranking" />
-          )}
+            {activeNav === 4 && (
+              <SceneTitle scene="SCENE 05" title="Board" />
+            )}
 
-          {activeNav === 4 && (
-            <SceneTitle scene="SCENE 05" title="Board" />
-          )}
-
-          {activeNav === 5 && (
-            <SceneTitle scene="SCENE 06" title="Retrospective" />
-          )}
-        </div>
-      </main>
+            {activeNav === 5 && (
+              <SceneTitle scene="SCENE 06" title="Retrospective" />
+            )}
+          </div>
+        </main>
+      )}
     </>
   )
 }
