@@ -29,7 +29,7 @@ const problemSelectionTemplates = [
   { title: '11720번 숫자의 합', language: 'Python', level: 'Normal', rate: '47.9%' },
   { title: '1152번 단어의 개수', language: 'Python', level: 'Normal', rate: '34.4%' },
   { title: '1260번 DFS와 BFS', language: 'Java', level: 'Normal', rate: '36.2%' },
-  { title: '1931번 회의실 배정', language: 'C', level: 'Gold', rate: '38.9%' },
+  { title: '1931번 회의실 배정', language: 'C', level: 'Gold', rate: '12.9%' },
 ]
 
 const PROBLEM_PAGE_SIZE = 10
@@ -122,13 +122,22 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
         <div className="problem-selection-list">
           {currentProblems.map((problem) => (
             <article className="problem-selection-row" key={problem.id}>
-              <strong>{problem.title}</strong>
-              <span className="problem-language">{problem.language}</span>
-              <span className={`problem-level ${problem.level.toLowerCase()}`}>
-                {problem.level}
-              </span>
-              <span className="problem-rate">{problem.rate}</span>
-              <button type="button">풀기</button>
+              <div className="problem-left">
+                <strong>{problem.title}</strong>
+                <span className="problem-language">{problem.language}</span>
+              </div>
+
+              <div className="problem-right">
+                <span className={`problem-level ${problem.level.toLowerCase()}`}>
+                  {problem.level}
+                </span>
+
+                <span className="problem-rate">
+                  {problem.rate}
+                </span>
+
+                <button type="button">풀기</button>
+              </div>
             </article>
           ))}
         </div>
@@ -142,11 +151,23 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
           >
             <ChevronIcon direction="left" />
           </button>
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+          {Array.from(
+            {
+              length: Math.min(3, totalPages),
+            },
+            (_, index) => {
+              const startPage = Math.min(
+                Math.max(currentPage - 1, 1),
+                Math.max(totalPages - 2, 1)
+              )
+
+              return startPage + index
+            }
+          ).map((page) => (
             <button
-              className={currentPage === page ? 'active' : ''}
               key={page}
               type="button"
+              className={currentPage === page ? 'active' : ''}
               onClick={() => setCurrentPage(page)}
             >
               {page}
