@@ -9,6 +9,87 @@
   gap: 24px;
 }
 
+/* =========================================
+   Toast Popup Styles
+   ========================================= */
+
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column; /* 새로 추가되는 요소가 아래에 붙으며 기존 요소를 위로 밀어올림 */
+  gap: 12px;
+  z-index: 9999;
+  pointer-events: none; /* 토스트 팝업이 뒤의 버튼 클릭을 방해하지 않게 함 */
+}
+
+.toast-message {
+  background-color: #ffffff;
+  border: 1px solid #ff4d4f;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  pointer-events: auto;
+
+  /* 올려주신 디자인 수치 반영 */
+  display: flex;
+  width: 620px; /* <--- 너비를 620px로 고정 */
+  padding: 20px 24px 23px 24px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.toast-title {
+  color: #ff4d4f;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 !important; /* !important를 추가하여 강제 적용 */
+  padding: 0 !important;
+  text-align: left;
+}
+
+.toast-desc {
+  color: #8c8c8c;
+  font-size: 13px;
+  margin: 0 !important; /* 왼쪽 142px 밀림 현상 강제 초기화 */
+  padding: 0 !important;
+  text-align: left;
+}
+
+/* 왼쪽에서 오른쪽으로 등장하는 애니메이션 */
+.slide-in {
+  animation: slideInLeft 0.3s ease-out forwards;
+}
+
+/* 3초 후 다시 왼쪽으로 빠지는 애니메이션 */
+.slide-out {
+  animation: slideOutLeft 0.6s ease-in-out forwards;
+}
+
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -1021,6 +1102,24 @@
 .problem-selection-actions button {
   min-width: 116px;
   padding: 0 20px;
+}
+
+.solve-button {
+  width: 72px;
+  height: 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #4b5563;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.solve-button.normal:hover,
+.solve-button.gold:hover,
+.solve-button.bronze:hover {
+  color: #c4c4c4;
 }
 
 .problem-selection-list {

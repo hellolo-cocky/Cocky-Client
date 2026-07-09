@@ -24,11 +24,11 @@ const problemSelectionTemplates = [
   { title: '1920번 수 찾기', language: 'C', level: 'Normal', rate: '30.1%' },
   { title: '10828번 스택', language: 'Python', level: 'Normal', rate: '37.8%' },
   { title: '1759번 암호 만들기', language: 'Java', level: 'Gold', rate: '44.7%' },
-  { title: '2751번 수 정렬하기', language: 'C', level: 'Normal', rate: '42.3%' },
+  { title: '2751번 수 정렬하기', language: 'C', level: 'Bronze', rate: '42.3%' },
   { title: '1005번 ACM Craft', language: 'Java', level: 'Gold', rate: '25.6%' },
   { title: '11720번 숫자의 합', language: 'Python', level: 'Normal', rate: '47.9%' },
   { title: '1152번 단어의 개수', language: 'Python', level: 'Normal', rate: '34.4%' },
-  { title: '1260번 DFS와 BFS', language: 'Java', level: 'Normal', rate: '36.2%' },
+  { title: '1260번 DFS와 BFS', language: 'Java', level: 'Bronze', rate: '36.2%' },
   { title: '1931번 회의실 배정', language: 'C', level: 'Gold', rate: '12.9%' },
 ]
 
@@ -40,6 +40,33 @@ const problemSelectionItems = Array.from({ length: 30 }, (_, index) => {
     id: index + 1,
   }
 })
+
+interface ToastData {
+  id: number;
+  title: string;
+  description: string;
+}
+
+function ToastItem({ toast, removeToast }: { toast: ToastData; removeToast: (id: number) => void }) {
+  const [isLeaving, setIsLeaving] = useState(false);
+
+  useEffect(() => {
+    const leaveTimer = setTimeout(() => setIsLeaving(true), 3000);
+    const removeTimer = setTimeout(() => removeToast(toast.id), 3600);
+
+    return () => {
+      clearTimeout(leaveTimer);
+      clearTimeout(removeTimer);
+    };
+  }, [toast.id, removeToast]);
+
+  return (
+    <div className={`toast-message ${isLeaving ? 'slide-out' : 'slide-in'}`}>
+      <strong className="toast-title">{toast.title}</strong>
+      <p className="toast-desc">{toast.description}</p>
+    </div>
+  );
+}
 
 function ChevronIcon({ direction = 'right' }: { direction?: 'left' | 'right' }) {
   return (
@@ -80,19 +107,57 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
     currentPage * PROBLEM_PAGE_SIZE,
   )
 
+  // --- 토스트 상태 관리 ---
+  const [toasts, setToasts] = useState<ToastData[]>([])
+
+  const addToast = () => {
+    const newToast = {
+      id: Date.now(),
+      title: '오늘은 문제 풀이가 불가능합니다',
+      description: '랭킹 / 피드백만 열람할 수 있습니다.',
+    }
+    setToasts((prev) => [...prev, newToast])
+  }
+
+  const removeToast = (id: number) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  }
+  // ------------------------------
+
   const handleTabClick = (tab: string) => {
     setActiveTab(tab)
     setCurrentPage(1)
   }
 
+  const isSunday = new Date().getDay() === 0;
+
+  const handleSolveClick = () => {
+    if (isSunday) {
+      addToast(); // 일요일이면 오류 팝업
+    } else {
+      console.log('정상적으로 문제 풀이 화면으로 이동합니다!');
+    }
+  }
+
   return (
     <section className="problem-page">
+      <div className="toast-container">
+        {toasts.map((toast) => (
+          <ToastItem key={toast.id} toast={toast} removeToast={removeToast} />
+        ))}
+      </div>
+
       <div className="problem-page-heading">
         <div>
-          <SceneTitle scene="SCENE 01" title="시작하기 후 문제 선택" />
+          <SceneTitle 
+            scene={isSunday ? "SCENE 02" : "SCENE 01"} 
+            title={isSunday ? "일요일 예외 열람 모드" : "시작하기 후 문제 선택"} 
+          />
           <p>
-            홈의 시작하기 버튼을 누르면 오늘 추천 문제와 문제 목록으로 이동하고,
-            선택한 문제는 풀이 화면으로 이어집니다.
+            {isSunday
+              ? "일요일에는 풀이 제출을 막고 랭킹/피드백만 열람하는 예외 상태입니다. 기본 시작 흐름은 문제 목록으로 이동합니다."
+              : "홈의 시작하기 버튼을 누르면 오늘 추천 문제와 문제 목록으로 이동하고, 선택한 문제는 풀이 화면으로 이어집니다."
+            }
           </p>
         </div>
       </div>
@@ -136,7 +201,13 @@ function ProblemSelectionPage({ onRankingClick }: { onRankingClick: () => void }
                   {problem.rate}
                 </span>
 
-                <button type="button">풀기</button>
+                <button
+                  type="button"
+                  className={`solve-button ${problem.level.toLowerCase()}`}
+                  onClick={handleSolveClick} 
+                >
+                  풀기
+                </button>
               </div>
             </article>
           ))}
