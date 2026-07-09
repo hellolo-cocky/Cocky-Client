@@ -999,6 +999,14 @@
   cursor: pointer;
 }
 
+.problem-page-heading p {
+  margin: 10px 0 0;
+  margin-left: 142px; /* scene-pill(128px) + section-title gap(14px) */
+  color: #6f7787;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
 .problem-selection-tabs button {
   min-width: 116px;
   padding: 0 22px;
@@ -1177,6 +1185,10 @@
     grid-template-columns: 1fr;
     justify-items: center;
     gap: 16px;
+  }
+
+  .problem-page-heading p {
+    margin-left: 0;
   }
 
   .nav {
