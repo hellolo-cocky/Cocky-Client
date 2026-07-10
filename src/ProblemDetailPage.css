@@ -108,6 +108,10 @@
   cursor: pointer;
 }
 
+.copy-button.copied {
+  color: #8600C4;
+}
+
 /* 하단 버튼 */
 .action-buttons {
   display: flex;

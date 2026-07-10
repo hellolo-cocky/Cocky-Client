@@ -1,4 +1,5 @@
 import './ProblemDetailPage.css'; 
+import { useState } from 'react';
 
 export interface ProblemItem {
   id: number;
@@ -12,10 +13,15 @@ export interface ProblemItem {
 export interface ProblemDetailPageProps {
   problem: ProblemItem;
   onBack: () => void;
-  onStartSolve: () => void; // 👈 부모에게 화면을 넘기라고 신호를 보낼 기능 추가
+  onStartSolve: () => void; // 부모에게 화면을 넘기라고 신호를 보낼 기능 추가
 }
 
 export default function ProblemDetailPage({ problem, onBack, onStartSolve }: ProblemDetailPageProps) {
+  // 훅을 함수 컴포넌트 내부의 맨 위로 이동시켰습니다.
+  const [copied, setCopied] = useState({
+    input: false,
+    output: false,
+  });
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -54,10 +60,13 @@ export default function ProblemDetailPage({ problem, onBack, onStartSolve }: Pro
                 <strong>예제 입력 1</strong>
                 <span className="example-value">1 2</span>
               </div>
-              <button 
-                type="button" 
-                className="copy-button"
-                onClick={() => handleCopy('1 2')}
+              <button
+                type="button"
+                className={`copy-button ${copied.input ? 'copied' : ''}`}
+                onClick={() => {
+                  handleCopy('1 2');
+                  setCopied(prev => ({ ...prev, input: true }));
+                }}
               >
                 복사
               </button>
@@ -69,10 +78,13 @@ export default function ProblemDetailPage({ problem, onBack, onStartSolve }: Pro
                 <strong>예제 출력 1</strong>
                 <span className="example-value">3</span>
               </div>
-              <button 
-                type="button" 
-                className="copy-button"
-                onClick={() => handleCopy('3')}
+              <button
+                type="button"
+                className={`copy-button ${copied.output ? 'copied' : ''}`}
+                onClick={() => {
+                  handleCopy('3');
+                  setCopied(prev => ({ ...prev, output: true }));
+                }}
               >
                 복사
               </button>
@@ -84,7 +96,7 @@ export default function ProblemDetailPage({ problem, onBack, onStartSolve }: Pro
             <button 
               type="button" 
               className="btn-primary"
-              onClick={onStartSolve} // 👈 풀이 시작 버튼을 누르면 부모 컴포넌트가 작동합니다.
+              onClick={onStartSolve} // 풀이 시작 버튼을 누르면 부모 컴포넌트가 작동합니다.
             >
               풀이 시작
             </button>
