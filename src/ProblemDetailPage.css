@@ -1,0 +1,139 @@
+/* 전체 레이아웃 */
+.problem-detail-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: sans-serif;
+  color: #111827;
+}
+
+/* 상단 헤더 */
+.scene-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.scene-badge {
+  background-color: #1f2937;
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.scene-title-group h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.scene-title-group p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* 메인 레이아웃 분할 */
+.detail-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* 왼쪽 문제 카드 */
+.problem-detail-card {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 48px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.problem-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 32px 0;
+}
+
+.problem-description p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  color: #374151;
+}
+
+/* 예제 박스 */
+.example-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.example-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.example-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.example-content strong {
+  font-size: 14px;
+  color: #111827;
+}
+
+.example-value {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  color: #111827;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.copy-button.copied {
+  color: #8600C4;
+}
+
+/* 하단 버튼 */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.action-buttons button {
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db !important;
+}
