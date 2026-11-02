@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './CodeEditorPage.css';
 import { type ProblemItem } from './ProblemDetailPage'; // 👈 ProblemItem 타입 임포트
+import FeedbackPage from './FeedbackPage';
 
 // 1️⃣ App.tsx에서 전달하는 프롭스(Props) 타입 정의
 interface CodeEditorPageProps {
@@ -16,6 +17,8 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
   const [submitted, setSubmitted] = useState(false);
 
   const languages = ['Python', 'C', 'Java'];
+
+  if (submitted) return <FeedbackPage problem={problem} onBack={onBack} onRetry={() => setSubmitted(false)} />
 
   return (
     <section className="code-editor-page">
@@ -77,7 +80,6 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
               제출하기
             </button>
           </div>
-          {submitted && <p className="submission-result" role="status">제출이 완료되었습니다 · 채점 결과를 확인할 수 있습니다.</p>}
         </article>
 
         {/* 2️⃣ 중간 지원 언어 ID 카드 */}
