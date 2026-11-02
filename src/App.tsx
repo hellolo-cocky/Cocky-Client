@@ -4,6 +4,7 @@ import AccountPage from './AccountPage'
 import ProblemDetailPage, { type ProblemItem } from './ProblemDetailPage'
 import CodeEditorPage from './CodeEditorPage'
 import RankingPage from './RankingPage'
+import BoardPage from './BoardPage'
 
 type Problem = {
   number: string
@@ -31,6 +32,7 @@ function App() {
   const [showAccount, setShowAccount] = useState(false)
   const [problemView, setProblemView] = useState<'list' | 'detail' | 'editor'>('list')
   const [showRanking, setShowRanking] = useState(false)
+  const [showBoard, setShowBoard] = useState(false)
   const [selectedProblem, setSelectedProblem] = useState<ProblemItem>({ id: 1001, title: 'A+B', level: 'Bronze', rate: '53.4%', tags: ['수학', '구현'] })
 
   const visibleProblems = useMemo(() => {
@@ -48,6 +50,7 @@ function App() {
 
   if (showAccount) return <AccountPage onBack={() => setShowAccount(false)} />
   if (showRanking) return <RankingPage onBack={() => setShowRanking(false)} />
+  if (showBoard) return <BoardPage onBack={() => setShowBoard(false)} />
   if (problemView === 'detail') return <ProblemDetailPage problem={selectedProblem} onBack={() => setProblemView('list')} onStartSolve={() => setProblemView('editor')} />
   if (problemView === 'editor') return <CodeEditorPage problem={selectedProblem} onBack={() => setProblemView('detail')} />
 
@@ -62,7 +65,7 @@ function App() {
           <a className="active" href="#problems">문제</a>
           <a href="#active-problem">학습</a>
           <a href="#ranking" onClick={(event) => { event.preventDefault(); setShowRanking(true) }}>랭킹</a>
-          <a href="#problems">게시판</a>
+          <a href="#board" onClick={(event) => { event.preventDefault(); setShowBoard(true) }}>게시판</a>
           <a href="#active-problem">회고</a>
         </nav>
         <button className="login-button" type="button" onClick={() => setShowAccount(true)}>로그인</button>
