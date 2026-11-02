@@ -3,6 +3,7 @@ import './App.css'
 import AccountPage from './AccountPage'
 import ProblemDetailPage, { type ProblemItem } from './ProblemDetailPage'
 import CodeEditorPage from './CodeEditorPage'
+import RankingPage from './RankingPage'
 
 type Problem = {
   number: string
@@ -29,6 +30,7 @@ function App() {
   const [submitted, setSubmitted] = useState(false)
   const [showAccount, setShowAccount] = useState(false)
   const [problemView, setProblemView] = useState<'list' | 'detail' | 'editor'>('list')
+  const [showRanking, setShowRanking] = useState(false)
   const [selectedProblem, setSelectedProblem] = useState<ProblemItem>({ id: 1001, title: 'A+B', level: 'Bronze', rate: '53.4%', tags: ['수학', '구현'] })
 
   const visibleProblems = useMemo(() => {
@@ -45,6 +47,7 @@ function App() {
   const startSolving = () => document.querySelector('#active-problem')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
   if (showAccount) return <AccountPage onBack={() => setShowAccount(false)} />
+  if (showRanking) return <RankingPage onBack={() => setShowRanking(false)} />
   if (problemView === 'detail') return <ProblemDetailPage problem={selectedProblem} onBack={() => setProblemView('list')} onStartSolve={() => setProblemView('editor')} />
   if (problemView === 'editor') return <CodeEditorPage problem={selectedProblem} onBack={() => setProblemView('detail')} />
 
@@ -58,7 +61,7 @@ function App() {
         <nav className="main-nav" aria-label="주요 메뉴">
           <a className="active" href="#problems">문제</a>
           <a href="#active-problem">학습</a>
-          <a href="#progress">랭킹</a>
+          <a href="#ranking" onClick={(event) => { event.preventDefault(); setShowRanking(true) }}>랭킹</a>
           <a href="#problems">게시판</a>
           <a href="#active-problem">회고</a>
         </nav>
