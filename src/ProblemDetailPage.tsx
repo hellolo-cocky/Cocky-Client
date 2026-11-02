@@ -33,10 +33,9 @@ export default function ProblemDetailPage({ problem, onBack, onStartSolve }: Pro
     <section className="problem-detail-page">
       {/* 상단 헤더 영역 */}
       <div className="scene-header">
-        <span className="scene-badge">SCENE 09</span>
         <div className="scene-title-group">
-          <h2>문제 상세 진입</h2>
-          <p>문제 카드 클릭 후 상세 설명과 풀이 시작 버튼을 표시합니다.</p>
+          <h2>문제 상세</h2>
+          <p>문제 설명과 예제를 확인하고 풀이를 시작하세요.</p>
         </div>
       </div>
 

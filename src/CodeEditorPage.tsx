@@ -13,6 +13,7 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
   const [code, setCode] = useState(
     'import sys\na, b = map(int, sys.stdin.readline().split())\nprint(a + b)'
   );
+  const [submitted, setSubmitted] = useState(false);
 
   const languages = ['Python', 'C', 'Java'];
 
@@ -49,7 +50,7 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
         {/* 1️⃣ 왼쪽 메인 코드 에디터 */}
         <article className="editor-card">
           {/* 언어 선택 탭 */}
-          <div className="editor-tabs">
+          <div className="editor-tabs" role="tablist" aria-label="프로그래밍 언어">
             {languages.map((lang) => (
               <button
                 key={lang}
@@ -72,10 +73,11 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
 
           {/* 하단 실행 및 제출 버튼 */}
           <div className="editor-actions">
-            <button type="button" className="btn-submit">
+            <button type="button" className="btn-submit" onClick={() => setSubmitted(true)}>
               제출하기
             </button>
           </div>
+          {submitted && <p className="submission-result" role="status">제출이 완료되었습니다 · 채점 결과를 확인할 수 있습니다.</p>}
         </article>
 
         {/* 2️⃣ 중간 지원 언어 ID 카드 */}
