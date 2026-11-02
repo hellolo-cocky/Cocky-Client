@@ -116,6 +116,9 @@
   color: #ffffff;
 }
 
+.btn-run { background: #363d46; color: #fff; }
+.editor-actions button:disabled { opacity: .65; cursor: wait; }
+
 .submission-result { color: #b7e4c7; font-size: 13px; margin: 16px 0 0; text-align: right; }
 
 /* 2️⃣ 지원 언어 ID 카드 */

@@ -180,3 +180,4 @@
   .active-problem-card, .editor-card, .result-card { min-height: 112px; }
   .result-card { grid-column: auto; }
 }
+.anonymous-toggle{margin-top:10px;padding:6px 8px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;color:#55606f;font-size:9px;cursor:pointer}.profile-error{margin:5px 0 0;color:#a43d3d;font-size:9px}
