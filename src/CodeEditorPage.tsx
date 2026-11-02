@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './CodeEditorPage.css';
 import { type ProblemItem } from './ProblemDetailPage'; // 👈 ProblemItem 타입 임포트
 import FeedbackPage from './FeedbackPage';
+import JudgeLoadingPage from './JudgeLoadingPage';
 
 // 1️⃣ App.tsx에서 전달하는 프롭스(Props) 타입 정의
 interface CodeEditorPageProps {
@@ -14,11 +15,18 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
   const [code, setCode] = useState(
     'import sys\na, b = map(int, sys.stdin.readline().split())\nprint(a + b)'
   );
-  const [submitted, setSubmitted] = useState(false);
+  const [submissionPhase, setSubmissionPhase] = useState<'editing' | 'loading' | 'result'>('editing');
 
   const languages = ['Python', 'C', 'Java'];
 
-  if (submitted) return <FeedbackPage problem={problem} onBack={onBack} onRetry={() => setSubmitted(false)} />
+  useEffect(() => {
+    if (submissionPhase !== 'loading') return
+    const timeout = window.setTimeout(() => setSubmissionPhase('result'), 1400)
+    return () => window.clearTimeout(timeout)
+  }, [submissionPhase])
+
+  if (submissionPhase === 'loading') return <JudgeLoadingPage problem={problem} />
+  if (submissionPhase === 'result') return <FeedbackPage problem={problem} onBack={onBack} onRetry={() => setSubmissionPhase('editing')} />
 
   return (
     <section className="code-editor-page">
@@ -76,7 +84,7 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
 
           {/* 하단 실행 및 제출 버튼 */}
           <div className="editor-actions">
-            <button type="button" className="btn-submit" onClick={() => setSubmitted(true)}>
+            <button type="button" className="btn-submit" onClick={() => setSubmissionPhase('loading')}>
               제출하기
             </button>
           </div>
