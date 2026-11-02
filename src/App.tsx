@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import './App.css'
 import AccountPage from './AccountPage'
+import ProblemDetailPage, { type ProblemItem } from './ProblemDetailPage'
+import CodeEditorPage from './CodeEditorPage'
 
 type Problem = {
   number: string
@@ -26,6 +28,8 @@ function App() {
   const [code, setCode] = useState('import sys\na, b = map(int, input().split())\nprint(a + b)')
   const [submitted, setSubmitted] = useState(false)
   const [showAccount, setShowAccount] = useState(false)
+  const [problemView, setProblemView] = useState<'list' | 'detail' | 'editor'>('list')
+  const [selectedProblem, setSelectedProblem] = useState<ProblemItem>({ id: 1001, title: 'A+B', level: 'Bronze', rate: '53.4%', tags: ['수학', '구현'] })
 
   const visibleProblems = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -41,6 +45,8 @@ function App() {
   const startSolving = () => document.querySelector('#active-problem')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
   if (showAccount) return <AccountPage onBack={() => setShowAccount(false)} />
+  if (problemView === 'detail') return <ProblemDetailPage problem={selectedProblem} onBack={() => setProblemView('list')} onStartSolve={() => setProblemView('editor')} />
+  if (problemView === 'editor') return <CodeEditorPage problem={selectedProblem} onBack={() => setProblemView('detail')} />
 
   return (
     <div className="app-shell">
@@ -112,7 +118,7 @@ function App() {
           </div>
           <div className="problem-grid" aria-live="polite">
             {visibleProblems.length ? visibleProblems.map((problem) => (
-              <article className="problem-card" key={problem.number}>
+              <article className="problem-card" key={problem.number} role="button" tabIndex={0} onClick={() => { setSelectedProblem({ id: Number(problem.number), title: problem.title, level: problem.level, rate: `${problem.accuracy.toFixed(1)}%`, tags: problem.tags }); setProblemView('detail') }} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedProblem({ id: Number(problem.number), title: problem.title, level: problem.level, rate: `${problem.accuracy.toFixed(1)}%`, tags: problem.tags }); setProblemView('detail') } }}>
                 <div className="problem-main"><h3>{problem.number}번 {problem.title}</h3><div className="tag-list">{problem.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}</div></div>
                 <div className="problem-meta"><span className={`rank ${problem.level.toLowerCase()}`}>{problem.level}</span><div className="accuracy"><span>정답률</span><strong>{problem.accuracy.toFixed(1)}%</strong></div></div>
               </article>
