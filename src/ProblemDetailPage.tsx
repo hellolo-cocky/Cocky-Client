@@ -1,5 +1,7 @@
-import './ProblemDetailPage.css'; 
-import { useState } from 'react';
+import './ProblemDetailPage.css';
+import { useEffect, useState } from 'react';
+import { getApiErrorMessage } from './api/client';
+import { problemsApi } from './api/services';
 
 export interface ProblemItem {
   id: number;
@@ -8,6 +10,7 @@ export interface ProblemItem {
   level: string;
   rate: string | number;
   tags?: string[]; 
+  description?: string;
 }
 
 export interface ProblemDetailPageProps {
@@ -17,17 +20,16 @@ export interface ProblemDetailPageProps {
 }
 
 export default function ProblemDetailPage({ problem, onBack, onStartSolve }: ProblemDetailPageProps) {
-  // 훅을 함수 컴포넌트 내부의 맨 위로 이동시켰습니다.
-  const [copied, setCopied] = useState({
-    input: false,
-    output: false,
-  });
+  const [description, setDescription] = useState(problem.description || '');
+  const [error, setError] = useState('');
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('복사되었습니다.');
-    });
-  };
+  useEffect(() => {
+    let active = true;
+    problemsApi.detail(problem.id)
+      .then((detail) => { if (active) setDescription(detail.content); })
+      .catch((requestError) => { if (active) setError(getApiErrorMessage(requestError, '문제 상세를 불러오지 못했습니다.')); });
+    return () => { active = false; };
+  }, [problem.id]);
 
   return (
     <section className="problem-detail-page">
@@ -44,51 +46,7 @@ export default function ProblemDetailPage({ problem, onBack, onStartSolve }: Pro
         <article className="problem-detail-card">
           <h1 className="problem-title">{problem.title}</h1>
           
-          <div className="problem-description">
-            <p>두 정수 A와 B를 입력받은 다음, A+B를 출력하세요.</p>
-            <p>
-              입력: 첫째 줄에 A와 B가 주어집니다.<br />
-              출력: 첫째 줄에 A+B를 출력합니다.
-            </p>
-          </div>
-
-          <div className="example-container">
-            {/* 예제 입력 1 */}
-            <div className="example-box">
-              <div className="example-content">
-                <strong>예제 입력 1</strong>
-                <span className="example-value">1 2</span>
-              </div>
-              <button
-                type="button"
-                className={`copy-button ${copied.input ? 'copied' : ''}`}
-                onClick={() => {
-                  handleCopy('1 2');
-                  setCopied(prev => ({ ...prev, input: true }));
-                }}
-              >
-                복사
-              </button>
-            </div>
-
-            {/* 예제 출력 1 */}
-            <div className="example-box">
-              <div className="example-content">
-                <strong>예제 출력 1</strong>
-                <span className="example-value">3</span>
-              </div>
-              <button
-                type="button"
-                className={`copy-button ${copied.output ? 'copied' : ''}`}
-                onClick={() => {
-                  handleCopy('3');
-                  setCopied(prev => ({ ...prev, output: true }));
-                }}
-              >
-                복사
-              </button>
-            </div>
-          </div>
+          <div className="problem-description">{error ? <p role="alert">{error}</p> : description ? <p>{description}</p> : <p>문제 내용을 불러오는 중입니다.</p>}</div>
 
           {/* 하단 버튼 그룹 */}
           <div className="action-buttons">

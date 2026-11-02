@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './CodeEditorPage.css';
-import { type ProblemItem } from './ProblemDetailPage'; // 👈 ProblemItem 타입 임포트
+import { type ProblemItem } from './ProblemDetailPage';
 import FeedbackPage from './FeedbackPage';
 import JudgeLoadingPage from './JudgeLoadingPage';
+import { getApiErrorMessage } from './api/client';
+import { submissionsApi } from './api/services';
+import type { CodeRunResult, Language, SubmissionResult } from './api/types';
 
 // 1️⃣ App.tsx에서 전달하는 프롭스(Props) 타입 정의
 interface CodeEditorPageProps {
@@ -16,17 +19,44 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
     'import sys\na, b = map(int, sys.stdin.readline().split())\nprint(a + b)'
   );
   const [submissionPhase, setSubmissionPhase] = useState<'editing' | 'loading' | 'result'>('editing');
+  const [submission, setSubmission] = useState<SubmissionResult | null>(null);
+  const [requestError, setRequestError] = useState('');
+  const [runResult, setRunResult] = useState<CodeRunResult | null>(null);
+  const [running, setRunning] = useState(false);
 
   const languages = ['Python', 'C', 'Java'];
+  const languageCode: Language = activeLanguage.toUpperCase() as Language
 
-  useEffect(() => {
-    if (submissionPhase !== 'loading') return
-    const timeout = window.setTimeout(() => setSubmissionPhase('result'), 1400)
-    return () => window.clearTimeout(timeout)
-  }, [submissionPhase])
+  const submit = async () => {
+    setRequestError('')
+    setSubmissionPhase('loading')
+    try {
+      const result = await submissionsApi.submit({ problemId: problem.id, language: languageCode, code })
+      let completedResult = result
+      if (!result.feedback && result.verdict === 'AC') {
+        const feedback = await submissionsApi.feedback(result.submissionId).catch(() => null)
+        if (feedback) completedResult = { ...result, feedback }
+      }
+      setSubmission(completedResult)
+      setSubmissionPhase('result')
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, '제출 결과를 불러오지 못했습니다.'))
+      setSubmissionPhase('editing')
+    }
+  }
+
+  const run = async () => {
+    setRunning(true)
+    setRequestError('')
+    try {
+      setRunResult(await submissionsApi.run({ language: languageCode, code, stdin: '' }))
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, '코드를 실행하지 못했습니다.'))
+    } finally { setRunning(false) }
+  }
 
   if (submissionPhase === 'loading') return <JudgeLoadingPage problem={problem} />
-  if (submissionPhase === 'result') return <FeedbackPage problem={problem} onBack={onBack} onRetry={() => setSubmissionPhase('editing')} />
+  if (submissionPhase === 'result' && submission) return <FeedbackPage problem={problem} submission={submission} language={activeLanguage} onBack={onBack} onRetry={() => { setSubmission(null); setSubmissionPhase('editing') }} />
 
   return (
     <section className="code-editor-page">
@@ -84,10 +114,13 @@ export default function CodeEditorPage({ problem, onBack }: CodeEditorPageProps)
 
           {/* 하단 실행 및 제출 버튼 */}
           <div className="editor-actions">
-            <button type="button" className="btn-submit" onClick={() => setSubmissionPhase('loading')}>
+            <button type="button" className="btn-run" onClick={run} disabled={running}>{running ? '실행 중…' : '실행'}</button>
+            <button type="button" className="btn-submit" onClick={submit}>
               제출하기
             </button>
           </div>
+          {requestError && <p className="submission-result" role="alert">{requestError}</p>}
+          {runResult && <pre className="submission-result" role="status">{runResult.stdout || runResult.stderr || runResult.compileOutput || `실행 상태: ${runResult.status}`}</pre>}
         </article>
 
         {/* 2️⃣ 중간 지원 언어 ID 카드 */}
