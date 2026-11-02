@@ -6,6 +6,7 @@ import CodeEditorPage from './CodeEditorPage'
 import RankingPage from './RankingPage'
 import BoardPage from './BoardPage'
 import SchedulePage from './SchedulePage'
+import LearningPage from './LearningPage'
 
 type Problem = {
   number: string
@@ -35,6 +36,7 @@ function App() {
   const [showRanking, setShowRanking] = useState(false)
   const [showBoard, setShowBoard] = useState(false)
   const [showSchedule, setShowSchedule] = useState(false)
+  const [showLearning, setShowLearning] = useState(false)
   const [selectedProblem, setSelectedProblem] = useState<ProblemItem>({ id: 1001, title: 'A+B', level: 'Bronze', rate: '53.4%', tags: ['수학', '구현'] })
 
   const visibleProblems = useMemo(() => {
@@ -54,6 +56,7 @@ function App() {
   if (showRanking) return <RankingPage onBack={() => setShowRanking(false)} />
   if (showBoard) return <BoardPage onBack={() => setShowBoard(false)} />
   if (showSchedule) return <SchedulePage onBack={() => setShowSchedule(false)} />
+  if (showLearning) return <LearningPage onBack={() => setShowLearning(false)} />
   if (problemView === 'detail') return <ProblemDetailPage problem={selectedProblem} onBack={() => setProblemView('list')} onStartSolve={() => setProblemView('editor')} />
   if (problemView === 'editor') return <CodeEditorPage problem={selectedProblem} onBack={() => setProblemView('detail')} />
 
@@ -69,7 +72,7 @@ function App() {
           <a href="#schedule" onClick={(event) => { event.preventDefault(); setShowSchedule(true) }}>학습</a>
           <a href="#ranking" onClick={(event) => { event.preventDefault(); setShowRanking(true) }}>랭킹</a>
           <a href="#board" onClick={(event) => { event.preventDefault(); setShowBoard(true) }}>게시판</a>
-          <a href="#active-problem">회고</a>
+          <a href="#learning" onClick={(event) => { event.preventDefault(); setShowLearning(true) }}>회고</a>
         </nav>
         <button className="login-button" type="button" onClick={() => setShowAccount(true)}>로그인</button>
       </header>
