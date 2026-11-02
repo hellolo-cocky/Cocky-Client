@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import './App.css'
+import AccountPage from './AccountPage'
 
 type Problem = {
   number: string
@@ -24,6 +25,7 @@ function App() {
   const [sortLowFirst, setSortLowFirst] = useState(true)
   const [code, setCode] = useState('import sys\na, b = map(int, input().split())\nprint(a + b)')
   const [submitted, setSubmitted] = useState(false)
+  const [showAccount, setShowAccount] = useState(false)
 
   const visibleProblems = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -37,6 +39,8 @@ function App() {
   }, [level, query, sortLowFirst])
 
   const startSolving = () => document.querySelector('#active-problem')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+  if (showAccount) return <AccountPage onBack={() => setShowAccount(false)} />
 
   return (
     <div className="app-shell">
@@ -52,7 +56,7 @@ function App() {
           <a href="#problems">게시판</a>
           <a href="#active-problem">회고</a>
         </nav>
-        <button className="login-button" type="button">로그인</button>
+        <button className="login-button" type="button" onClick={() => setShowAccount(true)}>로그인</button>
       </header>
 
       <main className="home-page" id="home">
