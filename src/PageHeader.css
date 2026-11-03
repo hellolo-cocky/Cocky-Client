@@ -1,0 +1,27 @@
+/* Keep the top bar in the same place and size across app screens. */
+.site-header,
+.board-header,
+.ranking-header,
+.schedule-header,
+.learning-header,
+.feedback-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-sizing: border-box;
+  height: 76px;
+  flex: 0 0 76px;
+  background: #fff;
+}
+
+@media (max-width: 580px) {
+  .site-header,
+  .board-header,
+  .ranking-header,
+  .schedule-header,
+  .learning-header,
+  .feedback-header {
+    height: 64px;
+    flex-basis: 64px;
+  }
+}
