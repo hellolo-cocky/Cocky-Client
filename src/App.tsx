@@ -10,6 +10,7 @@ import LearningPage from './LearningPage'
 import { authApi, learningApi, problemsApi, submissionsApi } from './api/services'
 import { getApiErrorMessage, tokenStore } from './api/client'
 import type { SubmissionResult, UserMe } from './api/types'
+import './PageHeader.css'
 
 type Problem = {
   number: string
